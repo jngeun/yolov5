@@ -3,13 +3,13 @@ from pycocotools.coco import COCO
 import cv2
 from tqdm import tqdm
 
-save_path = "/home/jngeun/darknet/training/dataset_person/validation/"
+save_path = "/home/jngeun/dataset/temp/"
 
 class_id = 'person'
-classes_dict = {'door' : 0,'handle':1,'person' : 2,'refrigerator': 3}
+classes_dict = {'person' : 0,'door':1,'handle' : 2,'refrigerator': 3}
 
 #coco instance
-coco = COCO('/home/jngeun/download_dataset/cocodataset/annotations/instances_train2017.json')
+coco = COCO('/home/jngeun/dataset/instances_train2017.json')
 cats = coco.loadCats(coco.getCatIds())
 nms=[cat['name'] for cat in cats]
 
@@ -18,7 +18,7 @@ imgIds = coco.getImgIds(catIds=catIds )
 images = coco.loadImgs(imgIds)
 
 
-for im in tqdm(images[-100:], desc='iterate list'):
+for im in tqdm(images[-600:-100], desc='iterate list'):
 
     #save image
     img_data = requests.get(im['coco_url']).content

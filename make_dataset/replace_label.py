@@ -2,7 +2,7 @@ import os
 import numpy as np
 
 #파일경로 가져오기
-data_path = "/home/jngeun/darknet/training/dataset_fire"
+data_path = "/home/jngeun/dataset/fire"
 file_names = os.listdir(data_path)
 
 txt_file_names = [file for file in file_names if file.endswith(".txt")]
