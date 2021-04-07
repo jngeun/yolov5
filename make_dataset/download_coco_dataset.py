@@ -18,7 +18,7 @@ imgIds = coco.getImgIds(catIds=catIds )
 images = coco.loadImgs(imgIds)
 
 
-for im in tqdm(images[-600:-100], desc='iterate list'):
+for im in tqdm(images[1155:10000], desc='iterate list'):
 
     #save image
     img_data = requests.get(im['coco_url']).content
