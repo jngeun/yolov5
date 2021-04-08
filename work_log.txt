@@ -2,7 +2,6 @@
 python train.py --img 640 --batch 8 --epochs 500 --data disaster.yaml --weights yolov5l.pt
 --> out of memory 
 
-#pyqt와 버전 맞추기 위해 openCV 버전 변경
 opencv version 4.5.1.48 --> 4.3.0.36
 
 python train.py --img 640 --batch 8 --epochs 500 --data disaster.yaml --weights yolov5m.pt

@@ -223,7 +223,7 @@ class Detect(QtCore.QThread):
 
         print(f'Done. ({time.time() - t0:.3f}s)')
 
-form_class = uic.loadUiType("window.ui")[0]
+form_class = uic.loadUiType("MyWindow.ui")[0]
 
 class MyWindow(QMainWindow, form_class):
     def __init__(self,parent=None):
@@ -246,8 +246,11 @@ class MyWindow(QMainWindow, form_class):
         print("receive")
         qImg = cv2.cvtColor(im0, cv2.COLOR_BGR2RGB)
         h, w, c = qImg.shape
+        w_scale,h_scale = 1.5, 1.5
         qImg = QtGui.QImage(qImg.data, w, h, w * c, QtGui.QImage.Format_RGB888)
         pixmap = QtGui.QPixmap.fromImage(qImg)
+        pixmap = pixmap.scaledToWidth(w_scale * w)
+        pixmap = pixmap.scaledToHeight(h_scale * h)
         self.label.setPixmap(pixmap)
 
 
