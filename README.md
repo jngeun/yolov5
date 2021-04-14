@@ -135,9 +135,11 @@ $ python train.py --data coco.yaml --cfg yolov5s.yaml --weights '' --batch-size 
 ## object detection on disaster scene
 
 * training result
+<img src="https://github.com/jngeun/yolov5/blob/master/data/images/Screenshot%20from%202021-04-14%2016-15-32.png" width="300">
+<img src="https://github.com/jngeun/yolov5/blob/master/data/images/Screenshot%20from%202021-04-14%2016-15-40.png" width="300">
 
 * detection on pyqt window
-<img src="https://github.com/jngeun/yolov5/blob/master/data/images/Screenshot%20from%202021-04-14%2016-26-47.png" width="900">
+<img src="https://github.com/jngeun/yolov5/blob/master/data/images/Screenshot%20from%202021-04-14%2016-26-47.png" width="300">
 
 
 ## Citation
