@@ -136,9 +136,8 @@ $ python train.py --data coco.yaml --cfg yolov5s.yaml --weights '' --batch-size 
 
 * training result
 
-
 * detection on pyqt window
-<img src="<img src="https://user-images.githubusercontent.com/26833433/90222759-949d8800-ddc1-11ea-9fa1-1c97eed2b963.png" width="900">" width="900">
+<img src="https://drive.google.com/file/d/1xvlfXAwi3Lmk24kRFJt5CkK-7666SUJM/view?usp=sharing" width="900">
 
 
 ## Citation
