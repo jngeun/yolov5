@@ -242,8 +242,11 @@ class MyWindow(QMainWindow, form_class):
         print(f'Thread start')
         self.th.start()
 
+        self.led_toggle = 0
+
+
+
     def threadEventHandler(self, im0):
-        print("receive")
         qImg = cv2.cvtColor(im0, cv2.COLOR_BGR2RGB)
         h, w, c = qImg.shape
         w_scale,h_scale = 1.5, 1.5
@@ -251,7 +254,21 @@ class MyWindow(QMainWindow, form_class):
         pixmap = QtGui.QPixmap.fromImage(qImg)
         pixmap = pixmap.scaledToWidth(w_scale * w)
         pixmap = pixmap.scaledToHeight(h_scale * h)
-        self.label.setPixmap(pixmap)
+        self.video.setPixmap(pixmap)
+
+        #led
+        self.led_toggle = 1 - self.led_toggle
+
+        if self.led_toggle:
+            self.ledOn()
+        else:
+            self.ledOff()
+
+    def ledOn(self):
+        self.led_front.setStyleSheet('background-color:rgb(%s,%s,%s)' % (187, 224, 250))
+
+    def ledOff(self):
+        self.led_front.setStyleSheet('background-color:rgb(%s,%s,%s)' % (28, 39, 45))
 
 
 if __name__ == '__main__':
