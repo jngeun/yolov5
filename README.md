@@ -139,9 +139,11 @@ $ python train.py --data coco.yaml --cfg yolov5s.yaml --weights '' --batch-size 
 <img src="https://github.com/jngeun/yolov5/blob/master/data/images/Screenshot%20from%202021-04-14%2016-15-40.png" width="300">
 
 * detection on pyqt window
-``bash
+
+```bash
 $ python3 detect_on_pyqt.py --source 0 --nosave --weights /home/jngeun/yolov5/runs/train/exp7/weights/last.pt
 ```
+
 <img src="https://github.com/jngeun/yolov5/blob/master/data/images/Screenshot%20from%202021-04-14%2016-26-47.png" width="300">
 
 
