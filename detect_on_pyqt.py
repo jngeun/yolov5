@@ -11,7 +11,7 @@ from models.experimental import attempt_load
 from utils.datasets import LoadImages
 from utils.general import check_img_size, check_requirements, check_imshow, non_max_suppression, apply_classifier, \
     scale_coords, xyxy2xywh, strip_optimizer, set_logging, increment_path
-from utils.plots import plot_one_box
+from utils.plots import plot_one_label
 from utils.torch_utils import select_device, load_classifier, time_synchronized
 
 from PyQt5 import QtWidgets
@@ -20,7 +20,7 @@ from PyQt5 import QtGui
 from PyQt5.QtWidgets import QMainWindow
 from PyQt5 import QtCore
 from PyQt5 import uic
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QPoint
 from PyQt5.QtGui import QPainter, QPen
 
 import sys
@@ -102,6 +102,7 @@ class Detect(QtCore.QThread):
         super().__init__()
         self.main = parent
         self.img = None
+        self.label = []
 
     def run(self,save_img=False):
 
@@ -195,6 +196,8 @@ class Detect(QtCore.QThread):
                         s += f"{n} {names[int(c)]}{'s' * (n > 1)}, "  # add to string
 
                     # Write results
+                    self.label = []
+                    self.location = []
                     for *xyxy, conf, cls in reversed(det):
                         if save_txt:  # Write to file
                             xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn).view(
@@ -204,8 +207,9 @@ class Detect(QtCore.QThread):
                                 f.write(('%g ' * len(line)).rstrip() % line + '\n')
 
                         if save_img or view_img:  # Add bbox to image
-                            label = f'{names[int(cls)]} {conf:.2f}'
-                            plot_one_box(xyxy, im0, label=label, color=colors[int(cls)], line_thickness=3)
+                            #label = f'{names[int(cls)]} {conf:.2f}'
+                            label = f'{names[int(cls)]}'
+                            plot_one_label(xyxy, im0, label=label, color=colors[int(cls)], line_thickness=1)
 
                 # Print time (inference + NMS)
                 print(f'{s}Done. ({t2 - t1:.3f}s)')
@@ -231,44 +235,110 @@ class MyWindow(QMainWindow, form_class):
 
         #GUI 배치
         self.setupUi(self)
+        self.initializeUi()
 
         #쓰레드 인스턴스 생성
         self.th = Detect(self)
-
         # 쓰레드 이벤트 연결
         self.th.threadEvent.connect(self.threadEventHandler)
-
         #쓰레드 시작
         print(f'Thread start')
         self.th.start()
 
-        self.led_toggle = 0
 
+
+
+    def initializeUi(self):
+
+        #label
+        # self.label = [self.label1, self.label2, self.label3, self.label4, self.label5]
+        # self.label_center = []
+        # for i,label in enumerate(self.label):
+        #     x_center = (label.x() + label.width())
+        #     y_center = (label.y() + label.height())
+        #     self.label_center.append(QPoint(x_center,y_center))
+
+        # #led
+        # self.led_orange = (241, 162,20)
+        # self.led_blue = (22, 179, 251)
+        # self.led_gray = (59, 59, 59)
+        # self.pyqt_led = [self.led_front, self.led_right, self.led_back, self.led_left]
+        # self.led_toggle = 0
+        #
+        # for i in range(4):
+        #     self.ledOff(i)
+
+        #map
+        map = cv2.imread('/home/jngeun/yolov5/data/map.png', cv2.COLOR_BGR2RGB)
+        h, w, c = map.shape
+        map = QtGui.QImage(map.data, w, h, w * c, QtGui.QImage.Format_RGB888)
+        map = QtGui.QPixmap.fromImage(map)
+        self.map.setPixmap(map)
+
+        #system log
+        self.systemLog.setPlainText('시스템을 시작합니다.')
 
 
     def threadEventHandler(self, im0):
+
+        #webcam
         qImg = cv2.cvtColor(im0, cv2.COLOR_BGR2RGB)
         h, w, c = qImg.shape
-        w_scale,h_scale = 1.5, 1.5
+        w_scale,h_scale = 1.8, 1.8
         qImg = QtGui.QImage(qImg.data, w, h, w * c, QtGui.QImage.Format_RGB888)
         pixmap = QtGui.QPixmap.fromImage(qImg)
-        pixmap = pixmap.scaledToWidth(w_scale * w)
-        pixmap = pixmap.scaledToHeight(h_scale * h)
+        pixmap = pixmap.scaledToWidth(int(w_scale * w))
+        pixmap = pixmap.scaledToHeight(int(h_scale * h))
+        #self.drawLine(pixmap, QPoint(500, 400), self.label1.pos())
         self.video.setPixmap(pixmap)
 
+        #system Log
+        self.systemLog.append('사람을 발견했습니다')
+
+        #label
+        # for i,label in enumerate(self.th.label):
+        #     pixmap = QtGui.QPixmap(self.label[i].size())
+        #     pixmap.fill(Qt.transparent)
+        #     qp = QPainter(pixmap)
+        #     pen = QPen(Qt.red, 3)
+        #     qp.setPen(pen)
+        #     qp.drawLine(QPoint(500,400),self.label_center[i])
+        #     qp.drawText(pixmap.rect(), Qt.AlignCenter, label)
+        #     qp.end()
+        #     self.label[i].setPixmap(pixmap)
+
+
         #led
-        self.led_toggle = 1 - self.led_toggle
+        '''
+        self.led_toggle = ( self.led_toggle + 1 ) % 40
 
-        if self.led_toggle:
-            self.ledOn()
-        else:
-            self.ledOff()
+        if self.led_toggle == 0:
+            self.ledOn(0)
+            self.ledOff(3)
+        elif self.led_toggle == 10:
+            self.ledOn(1)
+            self.ledOff(0)
+        elif self.led_toggle == 20:
+            self.ledOn(2)
+            self.ledOff(1)
+        elif self.led_toggle ==30:
+            self.ledOn(3)
+            self.ledOff(2)
+        '''
 
-    def ledOn(self):
-        self.led_front.setStyleSheet('background-color:rgb(%s,%s,%s)' % (187, 224, 250))
 
-    def ledOff(self):
-        self.led_front.setStyleSheet('background-color:rgb(%s,%s,%s)' % (28, 39, 45))
+    def drawLine(self,pixmap, p1, p2):
+        painter = QtGui.QPainter(pixmap)
+        painter.setPen(QPen(Qt.red, 10, Qt.SolidLine))
+        painter.drawLine(p1, p2)
+        painter.end
+        self.update()
+
+    # def ledOn(self, direction):
+    #     self.pyqt_led[direction].setStyleSheet(f'background-color:rgb{self.led_orange}')
+    #
+    # def ledOff(self,direction):
+    #     self.pyqt_led[direction].setStyleSheet(f'background-color:rgb{self.led_gray}')
 
 
 if __name__ == '__main__':
@@ -291,8 +361,10 @@ if __name__ == '__main__':
     parser.add_argument('--name', default='exp', help='save results to project/name')
     parser.add_argument('--exist-ok', action='store_true', help='existing project/name ok, do not increment')
     opt = parser.parse_args()
-    print(opt)
     check_requirements(exclude=('pycocotools', 'thop'))
+
+    #detection label
+    detection_label = []
 
     # QApplication : 프로그램을 실행시켜주는 클래스
     app = QtWidgets.QApplication(sys.argv)

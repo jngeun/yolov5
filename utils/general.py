@@ -441,6 +441,7 @@ def non_max_suppression(prediction, conf_thres=0.25, iou_thres=0.45, classes=Non
         x = x[xc[xi]]  # confidence
 
         # Cat apriori labels if autolabelling
+        labels = False
         if labels and len(labels[xi]):
             l = labels[xi]
             v = torch.zeros((len(l), nc + 5), device=x.device)

@@ -67,6 +67,36 @@ def plot_one_box(x, img, color=None, label=None, line_thickness=3):
         cv2.rectangle(img, c1, c2, color, -1, cv2.LINE_AA)  # filled
         cv2.putText(img, label, (c1[0], c1[1] - 2), 0, tl / 3, [225, 255, 255], thickness=tf, lineType=cv2.LINE_AA)
 
+def plot_one_label(x, img, color=None, label=None, line_thickness=1):
+    # Plots one bounding box on image img
+    tl = line_thickness or round(0.001 * (img.shape[0] + img.shape[1]) / 4) + 1  # line/font thickness
+    c1, c2 = (int(x[0]), int(x[1])), (int(x[2]), int(x[3]))
+    center = (int((x[0] + x[2])/ 2 ), int((x[1] + x[3]) / 2))
+    h, w, _ = img.shape
+    e = 40
+    if label:
+        tf = max(tl - 1, 1)  # font thickness
+        t_size = cv2.getTextSize(label, 0, fontScale=tl / 3, thickness=tf)[0]
+        if (center[0] >= w / 2) and (center[1] < h / 2): #1사분면
+            pnt = (center[0] - e, center[1] + e)
+            cv2.line(img, pnt, center, [225, 255, 255], thickness=tf, lineType=cv2.LINE_AA)
+            cv2.putText(img, label, (pnt[0] - t_size[0],pnt[1] + t_size[1]), 0, tl / 3, [225, 255, 255], thickness=tf, lineType=cv2.LINE_AA)
+        elif (center[0] < w / 2) and (center[1] < h / 2): #2사분면
+            pnt = (center[0] + e, center[1] + e)
+            cv2.line(img, (pnt[0],pnt[1] - t_size[1]), center, [225, 255, 255], thickness=tf, lineType=cv2.LINE_AA)
+            cv2.putText(img, label, pnt, 0, tl / 3, [225, 255, 255], thickness=tf, lineType=cv2.LINE_AA)
+        elif (center[0] < w / 2) and (center[1] >= h / 2): #3사분면
+            pnt = (center[0] + e, center[1] - e)
+            cv2.line(img, pnt, center, [225, 255, 255], thickness=tf, lineType=cv2.LINE_AA)
+            cv2.putText(img, label, pnt, 0, tl / 3, [225, 255, 255], thickness=tf, lineType=cv2.LINE_AA)
+        else: #4사분면
+            pnt = (center[0] - e , center[1] - e)
+            cv2.line(img, pnt, center, [225, 255, 255], thickness=tf, lineType=cv2.LINE_AA)
+            cv2.putText(img, label, (pnt[0] - t_size[0],pnt[1]), 0, tl / 3, [225, 255, 255], thickness=tf, lineType=cv2.LINE_AA)
+
+
+
+
 
 def plot_one_box_PIL(box, img, color=None, label=None, line_thickness=None):
     img = Image.fromarray(img)
