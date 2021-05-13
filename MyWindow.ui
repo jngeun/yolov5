@@ -61,9 +61,9 @@
      <colorrole role="Window">
       <brush brushstyle="SolidPattern">
        <color alpha="255">
-        <red>59</red>
-        <green>59</green>
-        <blue>59</blue>
+        <red>47</red>
+        <green>51</green>
+        <blue>62</blue>
        </color>
       </brush>
      </colorrole>
@@ -126,9 +126,9 @@
      <colorrole role="Window">
       <brush brushstyle="SolidPattern">
        <color alpha="255">
-        <red>59</red>
-        <green>59</green>
-        <blue>59</blue>
+        <red>47</red>
+        <green>51</green>
+        <blue>62</blue>
        </color>
       </brush>
      </colorrole>
@@ -182,18 +182,18 @@
      <colorrole role="Base">
       <brush brushstyle="SolidPattern">
        <color alpha="255">
-        <red>59</red>
-        <green>59</green>
-        <blue>59</blue>
+        <red>47</red>
+        <green>51</green>
+        <blue>62</blue>
        </color>
       </brush>
      </colorrole>
      <colorrole role="Window">
       <brush brushstyle="SolidPattern">
        <color alpha="255">
-        <red>59</red>
-        <green>59</green>
-        <blue>59</blue>
+        <red>47</red>
+        <green>51</green>
+        <blue>62</blue>
        </color>
       </brush>
      </colorrole>
@@ -220,7 +220,14 @@
     <item row="0" column="0">
      <layout class="QHBoxLayout" name="horizontalLayout" stretch="50,1,15">
       <item>
-       <layout class="QVBoxLayout" name="verticalLayout_2" stretch="8,2">
+       <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,8,2">
+        <item>
+         <widget class="QLabel" name="clock">
+          <property name="text">
+           <string>TextLabel</string>
+          </property>
+         </widget>
+        </item>
         <item>
          <widget class="QLabel" name="video">
           <property name="text">

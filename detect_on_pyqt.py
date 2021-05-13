@@ -22,6 +22,7 @@ from PyQt5 import QtCore
 from PyQt5 import uic
 from PyQt5.QtCore import Qt, QPoint
 from PyQt5.QtGui import QPainter, QPen
+from PyQt5.QtCore import QTimer, QTime
 
 import sys
 import os
@@ -278,14 +279,32 @@ class MyWindow(QMainWindow, form_class):
         #system log
         self.systemLog.setPlainText('시스템을 시작합니다.')
 
+        #Clock
+        # creating a timer object
+        timer = QTimer(self)
+
+        # adding action to timer
+        timer.timeout.connect(self.showTime)
+
+        # update the timer every second
+        timer.start(1000)
+
+        # led
+        self.upper_led = cv2.imread('data/images/upper_led.jpg', cv2.IMREAD_COLOR)
+
 
     def threadEventHandler(self, im0):
 
         #webcam
-        qImg = cv2.cvtColor(im0, cv2.COLOR_BGR2RGB)
-        h, w, c = qImg.shape
+        img = cv2.cvtColor(im0, cv2.COLOR_BGR2RGB)
+        h, w, c =img.shape
+
+        #label
+        self.led(img, 'U')
+
+        #pixmap
         w_scale,h_scale = 1.8, 1.8
-        qImg = QtGui.QImage(qImg.data, w, h, w * c, QtGui.QImage.Format_RGB888)
+        qImg = QtGui.QImage(img.data, w, h, w * c, QtGui.QImage.Format_RGB888)
         pixmap = QtGui.QPixmap.fromImage(qImg)
         pixmap = pixmap.scaledToWidth(int(w_scale * w))
         pixmap = pixmap.scaledToHeight(int(h_scale * h))
@@ -308,31 +327,39 @@ class MyWindow(QMainWindow, form_class):
         #     self.label[i].setPixmap(pixmap)
 
 
-        #led
-        '''
-        self.led_toggle = ( self.led_toggle + 1 ) % 40
-
-        if self.led_toggle == 0:
-            self.ledOn(0)
-            self.ledOff(3)
-        elif self.led_toggle == 10:
-            self.ledOn(1)
-            self.ledOff(0)
-        elif self.led_toggle == 20:
-            self.ledOn(2)
-            self.ledOff(1)
-        elif self.led_toggle ==30:
-            self.ledOn(3)
-            self.ledOff(2)
-        '''
-
-
     def drawLine(self,pixmap, p1, p2):
         painter = QtGui.QPainter(pixmap)
         painter.setPen(QPen(Qt.red, 10, Qt.SolidLine))
         painter.drawLine(p1, p2)
         painter.end
         self.update()
+
+    def showTime(self):
+        # getting current time
+        current_time = QTime.currentTime()
+        # converting QTime object to string
+        label_time = current_time.toString('hh:mm:ss')
+        # showing it to the label
+        self.clock.setStyleSheet("Color : white")  # 글자색 변환
+        self.clock.setText(label_time)
+
+
+    def led(self, img, direction):
+        led_width = 10
+
+        if direction == 'U':
+            roi = img[0:led_width, 0:640]
+        elif direction == 'R':
+            pass
+        elif direction == 'D':
+            pass
+        elif direction == 'L' :
+            pass
+        dst = cv2.addWeighted(roi, 0.5, self.upper_led, 0.5, 0)
+        img[0:10, 0:640] = dst
+
+        return img
+
 
     # def ledOn(self, direction):
     #     self.pyqt_led[direction].setStyleSheet(f'background-color:rgb{self.led_orange}')
