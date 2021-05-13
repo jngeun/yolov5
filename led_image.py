@@ -20,14 +20,21 @@ def capture(camid=CAM_ID):
 if __name__ == "__main__":
     cam_img = capture(CAM_ID)
     h,w,c = cam_img.shape
-    upper_led = cv2.imread('data/images/upper_led.jpg',cv2.IMREAD_COLOR)
+    # upper_led = cv2.imread('data/images/upper_led.jpg',cv2.IMREAD_COLOR)
 
-    roi = cam_img[0:10,0:640]
+    rampl = (np.linspace(1, 0, 30) * 255).astype(np.uint8)
+    rampl = np.tile(np.transpose(rampl), (480, 1))
+    rampl = cv2.merge([rampl, rampl, rampl])
+    up = cv2.rotate(rampl,cv2.ROTATE_180)
+    cv2.imwrite('data/images/led_right.jpg',up)
 
-    dst = cv2.addWeighted(roi,0.5,upper_led,0.5,0)
-    cam_img[0:10, 0:640] = dst
+    roi = cam_img[0:30,0:640]
+
+    dst = cv2.add(roi,up)
+    cam_img[0:30, 0:640] = dst
 
     cv2.imshow('cam_img', cam_img)
+    cv2.imshow('-',up)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 

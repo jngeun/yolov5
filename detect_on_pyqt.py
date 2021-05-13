@@ -282,16 +282,21 @@ class MyWindow(QMainWindow, form_class):
         #Clock
         # creating a timer object
         timer = QTimer(self)
-
         # adding action to timer
         timer.timeout.connect(self.showTime)
-
         # update the timer every second
         timer.start(1000)
+        self.clock.setFont(QtGui.QFont("궁서", 20))
+        self.clock.setStyleSheet("Color : white")
 
         # led
-        self.upper_led = cv2.imread('data/images/upper_led.jpg', cv2.IMREAD_COLOR)
+        self.cnt = 0
+        self.led_up = cv2.imread('data/images/led_up.jpg', cv2.IMREAD_COLOR)
+        self.led_down = cv2.imread('data/images/led_down.jpg', cv2.IMREAD_COLOR)
+        self.led_left = cv2.imread('data/images/led_left.jpg', cv2.IMREAD_COLOR)
+        self.led_right = cv2.imread('data/images/led_right.jpg', cv2.IMREAD_COLOR)
 
+        self.led_width = self.led_up.shape[0]
 
     def threadEventHandler(self, im0):
 
@@ -300,7 +305,15 @@ class MyWindow(QMainWindow, form_class):
         h, w, c =img.shape
 
         #label
-        self.led(img, 'U')
+        self.cnt =  (self.cnt + 1 ) % 100
+        if self.cnt == 0:
+            self.led(img, 'U')
+        elif self.cnt == 25:
+            self.led(img, 'R')
+        elif self.cnt ==50:
+            self.led(img, 'D')
+        elif self.cnt == 75:
+            self.led(img, 'L')
 
         #pixmap
         w_scale,h_scale = 1.8, 1.8
@@ -340,23 +353,19 @@ class MyWindow(QMainWindow, form_class):
         # converting QTime object to string
         label_time = current_time.toString('hh:mm:ss')
         # showing it to the label
-        self.clock.setStyleSheet("Color : white")  # 글자색 변환
         self.clock.setText(label_time)
 
 
     def led(self, img, direction):
-        led_width = 10
 
         if direction == 'U':
-            roi = img[0:led_width, 0:640]
+            img[0:self.led_width, 0:640] = cv2.add(img[0:self.led_width, 0:640],self.led_up)
         elif direction == 'R':
-            pass
+            img[0:480, 640 - self.led_width:640] = cv2.add(img[0:480,640 - self.led_width:640], self.led_right)
         elif direction == 'D':
-            pass
+            img[480 - self.led_width:480, 0:640] = cv2.add(img[480 - self.led_width :480, 0:640], self.led_down)
         elif direction == 'L' :
-            pass
-        dst = cv2.addWeighted(roi, 0.5, self.upper_led, 0.5, 0)
-        img[0:10, 0:640] = dst
+            img[0:480, 0: self.led_width] = cv2.add(img[0:480, 0: self.led_width], self.led_left)
 
         return img
 
