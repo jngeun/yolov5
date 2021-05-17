@@ -103,7 +103,8 @@ class Detect(QtCore.QThread):
         super().__init__()
         self.main = parent
         self.img = None
-        self.label = []
+
+        self.diff = []
 
     def run(self,save_img=False):
 
@@ -120,6 +121,8 @@ class Detect(QtCore.QThread):
         set_logging()
         device = select_device(opt.device)
         half = device.type != 'cpu'  # half precision only supported on CUDA
+        self.current_label = f""
+        previous_label = f""
 
         # Load model
         model = attempt_load(weights, map_location=device)  # load FP32 model
@@ -187,18 +190,20 @@ class Detect(QtCore.QThread):
                     '' if dataset.mode == 'image' else f'_{frame}')  # img.txt
                 s += '%gx%g ' % img.shape[2:]  # print string
                 gn = torch.tensor(im0.shape)[[1, 0, 1, 0]]  # normalization gain whwh
+
                 if len(det):
                     # Rescale boxes from img_size to im0 size
                     det[:, :4] = scale_coords(img.shape[2:], det[:, :4], im0.shape).round()
-
+                    previous_label = self.current_label
+                    self.current_label = f""
+                    xx = f" "
                     # Print results
                     for c in det[:, -1].unique():
                         n = (det[:, -1] == c).sum()  # detections per class
                         s += f"{n} {names[int(c)]}{'s' * (n > 1)}, "  # add to string
+                        self.current_label += f"{n} {names[int(c)]}{'s' * (n > 1)} "
 
                     # Write results
-                    self.label = []
-                    self.location = []
                     for *xyxy, conf, cls in reversed(det):
                         if save_txt:  # Write to file
                             xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn).view(
@@ -211,6 +216,8 @@ class Detect(QtCore.QThread):
                             #label = f'{names[int(cls)]} {conf:.2f}'
                             label = f'{names[int(cls)]}'
                             plot_one_label(xyxy, im0, label=label, color=colors[int(cls)], line_thickness=1)
+
+                self.is_change = (self.current_label != previous_label)
 
                 # Print time (inference + NMS)
                 print(f'{s}Done. ({t2 - t1:.3f}s)')
@@ -246,9 +253,6 @@ class MyWindow(QMainWindow, form_class):
         print(f'Thread start')
         self.th.start()
 
-
-
-
     def initializeUi(self):
 
         #label
@@ -259,25 +263,18 @@ class MyWindow(QMainWindow, form_class):
         #     y_center = (label.y() + label.height())
         #     self.label_center.append(QPoint(x_center,y_center))
 
-        # #led
-        # self.led_orange = (241, 162,20)
-        # self.led_blue = (22, 179, 251)
-        # self.led_gray = (59, 59, 59)
-        # self.pyqt_led = [self.led_front, self.led_right, self.led_back, self.led_left]
-        # self.led_toggle = 0
-        #
-        # for i in range(4):
-        #     self.ledOff(i)
-
         #map
-        map = cv2.imread('/home/jngeun/yolov5/data/map.png', cv2.COLOR_BGR2RGB)
-        h, w, c = map.shape
-        map = QtGui.QImage(map.data, w, h, w * c, QtGui.QImage.Format_RGB888)
-        map = QtGui.QPixmap.fromImage(map)
+        map = QtGui.QPixmap('/home/jngeun/yolov5/data/images/map.png')
         self.map.setPixmap(map)
 
+        #battery
+        self.battery.setValue(100)
+
         #system log
-        self.systemLog.setPlainText('시스템을 시작합니다.')
+        self.systemLog.setPlainText('Start System.')
+
+        #sensor
+
 
         #Clock
         # creating a timer object
@@ -286,7 +283,7 @@ class MyWindow(QMainWindow, form_class):
         timer.timeout.connect(self.showTime)
         # update the timer every second
         timer.start(1000)
-        self.clock.setFont(QtGui.QFont("궁서", 20))
+        self.clock.setFont(QtGui.QFont("궁서", 16))
         self.clock.setStyleSheet("Color : white")
 
         # led
@@ -306,17 +303,17 @@ class MyWindow(QMainWindow, form_class):
 
         #label
         self.cnt =  (self.cnt + 1 ) % 100
-        if self.cnt == 0:
+        if self.cnt >= 0 and self.cnt < 25:
             self.led(img, 'U')
-        elif self.cnt == 25:
+        elif self.cnt >= 25 and self.cnt <50 :
             self.led(img, 'R')
-        elif self.cnt ==50:
+        elif self.cnt >=50 and self.cnt < 75:
             self.led(img, 'D')
-        elif self.cnt == 75:
+        elif self.cnt >= 75:
             self.led(img, 'L')
 
         #pixmap
-        w_scale,h_scale = 1.8, 1.8
+        w_scale,h_scale = 1.7, 1.7
         qImg = QtGui.QImage(img.data, w, h, w * c, QtGui.QImage.Format_RGB888)
         pixmap = QtGui.QPixmap.fromImage(qImg)
         pixmap = pixmap.scaledToWidth(int(w_scale * w))
@@ -325,7 +322,8 @@ class MyWindow(QMainWindow, form_class):
         self.video.setPixmap(pixmap)
 
         #system Log
-        self.systemLog.append('사람을 발견했습니다')
+        if self.th.is_change:
+            self.systemLog.append(self.th.current_label + 'is detected')
 
         #label
         # for i,label in enumerate(self.th.label):
@@ -368,13 +366,6 @@ class MyWindow(QMainWindow, form_class):
             img[0:480, 0: self.led_width] = cv2.add(img[0:480, 0: self.led_width], self.led_left)
 
         return img
-
-
-    # def ledOn(self, direction):
-    #     self.pyqt_led[direction].setStyleSheet(f'background-color:rgb{self.led_orange}')
-    #
-    # def ledOff(self,direction):
-    #     self.pyqt_led[direction].setStyleSheet(f'background-color:rgb{self.led_gray}')
 
 
 if __name__ == '__main__':

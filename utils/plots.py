@@ -76,23 +76,23 @@ def plot_one_label(x, img, color=None, label=None, line_thickness=1):
     e = 40
     if label:
         tf = max(tl - 1, 1)  # font thickness
-        t_size = cv2.getTextSize(label, 0, fontScale=tl / 3, thickness=tf)[0]
+        t_size = cv2.getTextSize(label, 0, fontScale=tl / 2, thickness=tf)[0]
         if (center[0] >= w / 2) and (center[1] < h / 2): #1사분면
             pnt = (center[0] - e, center[1] + e)
             cv2.line(img, pnt, center, [225, 255, 255], thickness=tf, lineType=cv2.LINE_AA)
-            cv2.putText(img, label, (pnt[0] - t_size[0],pnt[1] + t_size[1]), 0, tl / 3, [225, 255, 255], thickness=tf, lineType=cv2.LINE_AA)
+            cv2.putText(img, label, (pnt[0] - t_size[0],pnt[1] + t_size[1]), 0, tl / 2, [225, 255, 255], thickness=tf, lineType=cv2.LINE_AA)
         elif (center[0] < w / 2) and (center[1] < h / 2): #2사분면
             pnt = (center[0] + e, center[1] + e)
             cv2.line(img, (pnt[0],pnt[1] - t_size[1]), center, [225, 255, 255], thickness=tf, lineType=cv2.LINE_AA)
-            cv2.putText(img, label, pnt, 0, tl / 3, [225, 255, 255], thickness=tf, lineType=cv2.LINE_AA)
+            cv2.putText(img, label, pnt, 0, tl / 2, [225, 255, 255], thickness=tf, lineType=cv2.LINE_AA)
         elif (center[0] < w / 2) and (center[1] >= h / 2): #3사분면
             pnt = (center[0] + e, center[1] - e)
             cv2.line(img, pnt, center, [225, 255, 255], thickness=tf, lineType=cv2.LINE_AA)
-            cv2.putText(img, label, pnt, 0, tl / 3, [225, 255, 255], thickness=tf, lineType=cv2.LINE_AA)
+            cv2.putText(img, label, pnt, 0, tl / 2, [225, 255, 255], thickness=tf, lineType=cv2.LINE_AA)
         else: #4사분면
             pnt = (center[0] - e , center[1] - e)
             cv2.line(img, pnt, center, [225, 255, 255], thickness=tf, lineType=cv2.LINE_AA)
-            cv2.putText(img, label, (pnt[0] - t_size[0],pnt[1]), 0, tl / 3, [225, 255, 255], thickness=tf, lineType=cv2.LINE_AA)
+            cv2.putText(img, label, (pnt[0] - t_size[0],pnt[1]), 0, tl / 2, [225, 255, 255], thickness=tf, lineType=cv2.LINE_AA)
 
 
 
