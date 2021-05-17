@@ -220,72 +220,7 @@
     <item row="0" column="0">
      <layout class="QHBoxLayout" name="horizontalLayout" stretch="50,1,15">
       <item>
-       <layout class="QVBoxLayout" name="verticalLayout_left" stretch="0,7,2">
-        <item>
-         <layout class="QHBoxLayout" name="stateBar">
-          <item alignment="Qt::AlignRight">
-           <widget class="QLabel" name="clock">
-            <property name="text">
-             <string/>
-            </property>
-           </widget>
-          </item>
-          <item alignment="Qt::AlignRight">
-           <widget class="QProgressBar" name="battery">
-            <property name="palette">
-             <palette>
-              <active>
-               <colorrole role="Highlight">
-                <brush brushstyle="SolidPattern">
-                 <color alpha="255">
-                  <red>125</red>
-                  <green>98</green>
-                  <blue>255</blue>
-                 </color>
-                </brush>
-               </colorrole>
-              </active>
-              <inactive>
-               <colorrole role="Highlight">
-                <brush brushstyle="SolidPattern">
-                 <color alpha="255">
-                  <red>125</red>
-                  <green>98</green>
-                  <blue>255</blue>
-                 </color>
-                </brush>
-               </colorrole>
-              </inactive>
-              <disabled>
-               <colorrole role="Highlight">
-                <brush brushstyle="SolidPattern">
-                 <color alpha="255">
-                  <red>145</red>
-                  <green>145</green>
-                  <blue>145</blue>
-                 </color>
-                </brush>
-               </colorrole>
-              </disabled>
-             </palette>
-            </property>
-            <property name="value">
-             <number>24</number>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <widget class="QLabel" name="video">
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
+       <layout class="QVBoxLayout" name="verticalLayout_left" stretch="2">
         <item>
          <widget class="QTextBrowser" name="systemLog">
           <property name="palette">
@@ -431,40 +366,91 @@
       <item>
        <layout class="QVBoxLayout" name="verticalLayout_right">
         <item>
-         <widget class="QLabel" name="map">
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item>
          <layout class="QVBoxLayout" name="verticalLayout_3">
           <item>
-           <layout class="QGridLayout" name="gridLayout_2">
-            <item row="8" column="0">
-             <widget class="QLabel" name="label">
-              <property name="text">
-               <string/>
+           <layout class="QGridLayout" name="sensor">
+            <item row="5" column="1">
+             <widget class="QDial" name="dial4"/>
+            </item>
+            <item row="4" column="0">
+             <widget class="QDial" name="dial1"/>
+            </item>
+            <item row="4" column="1">
+             <widget class="QDial" name="dial2"/>
+            </item>
+            <item row="5" column="0">
+             <widget class="QDial" name="dial3"/>
+            </item>
+            <item row="6" column="0">
+             <widget class="QSpinBox" name="spinBox1">
+              <property name="palette">
+               <palette>
+                <active>
+                 <colorrole role="Midlight">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>49</red>
+                    <green>51</green>
+                    <blue>62</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="Mid">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>48</red>
+                    <green>50</green>
+                    <blue>62</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                </active>
+                <inactive>
+                 <colorrole role="Midlight">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>49</red>
+                    <green>51</green>
+                    <blue>62</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="Mid">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>48</red>
+                    <green>50</green>
+                    <blue>62</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                </inactive>
+                <disabled>
+                 <colorrole role="Midlight">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>49</red>
+                    <green>51</green>
+                    <blue>62</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="Mid">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>48</red>
+                    <green>50</green>
+                    <blue>62</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                </disabled>
+               </palette>
               </property>
              </widget>
             </item>
-            <item row="5" column="1">
-             <widget class="QDial" name="dial_4"/>
-            </item>
-            <item row="4" column="0">
-             <widget class="QDial" name="dial"/>
-            </item>
-            <item row="4" column="1">
-             <widget class="QDial" name="dial_2"/>
-            </item>
-            <item row="5" column="0">
-             <widget class="QDial" name="dial_3"/>
-            </item>
-            <item row="6" column="0">
-             <widget class="QSpinBox" name="spinBox"/>
-            </item>
             <item row="2" column="1">
-             <widget class="QSlider" name="sensor4">
+             <widget class="QSlider" name="slider4">
               <property name="palette">
                <palette>
                 <active>
@@ -508,10 +494,13 @@
              </widget>
             </item>
             <item row="6" column="1">
-             <widget class="QSpinBox" name="spinBox_2"/>
+             <widget class="QSpinBox" name="spinBox2"/>
+            </item>
+            <item row="7" column="0">
+             <widget class="QSpinBox" name="spinBox3"/>
             </item>
             <item row="2" column="0">
-             <widget class="QSlider" name="sensor3">
+             <widget class="QSlider" name="slider3">
               <property name="palette">
                <palette>
                 <active>
@@ -555,7 +544,7 @@
              </widget>
             </item>
             <item row="0" column="0">
-             <widget class="QSlider" name="sensor1">
+             <widget class="QSlider" name="slider1">
               <property name="palette">
                <palette>
                 <active>
@@ -599,7 +588,7 @@
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="QSlider" name="sensor2">
+             <widget class="QSlider" name="slider2">
               <property name="palette">
                <palette>
                 <active>
@@ -642,8 +631,11 @@
               </property>
              </widget>
             </item>
+            <item row="7" column="1">
+             <widget class="QSpinBox" name="spinBox4"/>
+            </item>
             <item row="3" column="1">
-             <widget class="QSlider" name="sensor6">
+             <widget class="QSlider" name="slider6">
               <property name="palette">
                <palette>
                 <active>
@@ -687,7 +679,7 @@
              </widget>
             </item>
             <item row="3" column="0">
-             <widget class="QSlider" name="sensor5">
+             <widget class="QSlider" name="slider5">
               <property name="palette">
                <palette>
                 <active>
@@ -729,12 +721,6 @@
                <enum>Qt::Horizontal</enum>
               </property>
              </widget>
-            </item>
-            <item row="7" column="0">
-             <widget class="QSpinBox" name="spinBox_3"/>
-            </item>
-            <item row="7" column="1">
-             <widget class="QSpinBox" name="spinBox_4"/>
             </item>
            </layout>
           </item>

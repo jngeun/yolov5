@@ -22,7 +22,7 @@ from PyQt5 import QtCore
 from PyQt5 import uic
 from PyQt5.QtCore import Qt, QPoint
 from PyQt5.QtGui import QPainter, QPen
-from PyQt5.QtCore import QTimer, QTime
+from PyQt5.QtCore import QTimer, QTime, QDateTime
 
 import sys
 import os
@@ -235,9 +235,9 @@ class Detect(QtCore.QThread):
 
         print(f'Done. ({time.time() - t0:.3f}s)')
 
-form_class = uic.loadUiType("MyWindow.ui")[0]
+main_page = uic.loadUiType("MainWindow.ui")[0]
 
-class MyWindow(QMainWindow, form_class):
+class MyWindow(QMainWindow, main_page):
     def __init__(self,parent=None):
         super().__init__(parent)
 
@@ -267,24 +267,38 @@ class MyWindow(QMainWindow, form_class):
         map = QtGui.QPixmap('/home/jngeun/yolov5/data/images/map.png')
         self.map.setPixmap(map)
 
-        #battery
-        self.battery.setValue(100)
 
         #system log
         self.systemLog.setPlainText('Start System.')
 
-        #sensor
-
-
+        #statebar
+        # battery
+        self.battery.setValue(80)
         #Clock
         # creating a timer object
         timer = QTimer(self)
         # adding action to timer
-        timer.timeout.connect(self.showTime)
+        timer.timeout.connect(self.showDateTime)
         # update the timer every second
         timer.start(1000)
         self.clock.setFont(QtGui.QFont("궁서", 16))
         self.clock.setStyleSheet("Color : white")
+        #btn
+        self.btn1.setStyleSheet('image:url(data/images/btn1.png);border:0px;')
+        self.btn2.setStyleSheet('image:url(data/images/btn2.png);border:0px;')
+        self.btn3.setStyleSheet('image:url(data/images/btn3.png);border:0px;')
+
+        self.setting.setStyleSheet('image:url(data/images/setting.png);border:0px;')
+        self.setting.clicked.connect(self.settingPage)
+
+        #sensor
+        self.slider1.setValue(10)
+        self.slider2.setValue(20)
+        self.slider3.setValue(30)
+        self.slider4.setValue(40)
+        self.slider5.setValue(50)
+        self.slider6.setValue(60)
+
 
         # led
         self.cnt = 0
@@ -345,11 +359,11 @@ class MyWindow(QMainWindow, form_class):
         painter.end
         self.update()
 
-    def showTime(self):
+    def showDateTime(self):
         # getting current time
-        current_time = QTime.currentTime()
+        current_time = QDateTime.currentDateTime()
         # converting QTime object to string
-        label_time = current_time.toString('hh:mm:ss')
+        label_time = current_time.toString('yyyy.MM.dd  hh:mm:ss')
         # showing it to the label
         self.clock.setText(label_time)
 
@@ -367,6 +381,16 @@ class MyWindow(QMainWindow, form_class):
 
         return img
 
+    def settingPage(self):
+        self.settingWindow = SecondPage()
+        self.settingWindow.show()
+
+setting_page = uic.loadUiType("SettingWindow.ui")[0]
+class SecondPage(QMainWindow, setting_page):
+    def __init__(self,parent=None):
+        super().__init__(parent)
+
+        self.setupUi(self)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -397,6 +421,7 @@ if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     # 객체 생성
     myWindow = MyWindow()
+    Page = SecondPage()
     # 프로그램 화면 보여줌
     myWindow.show()
     # 프로그램을 이벤트루프로 진입
