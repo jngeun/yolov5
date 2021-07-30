@@ -20,15 +20,22 @@ from PyQt5 import QtGui
 from PyQt5.QtWidgets import QMainWindow
 from PyQt5 import QtCore
 from PyQt5 import uic
-from PyQt5.QtCore import Qt, QPoint
-from PyQt5.QtGui import QPainter, QPen
-from PyQt5.QtCore import QTimer, QTime, QDateTime
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QPen
+from PyQt5.QtCore import QTimer, QDateTime
 
 import sys
 import os
 import numpy as np
 from utils.general import clean_str
 from utils.datasets import letterbox
+
+#Bring .ui files & image
+main_page = uic.loadUiType("MainWindow.ui")[0]
+setting_page = uic.loadUiType("SettingWindow.ui")[0]
+
+map_location = '/home/jngeun/yolov5/data/images/map.png'
+battery_voltage_percent = 80
 
 class LoadStreams:  # multiple IP or RTSP cameras
     def __init__(self, sources='streams.txt', img_size=640, stride=32):
@@ -54,9 +61,7 @@ class LoadStreams:  # multiple IP or RTSP cameras
             h = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
             fps = self.cap.get(cv2.CAP_PROP_FPS) % 100
             _, self.imgs[i] = self.cap.read()  # guarantee first frame
-            #thread = Thread(target=self.update, args=([i, self.cap]), daemon=True)
             print(f' success ({w}x{h} at {fps:.2f} FPS).')
-            #thread.start()
         print('')  # newline
 
         # check for common shapes
@@ -235,9 +240,8 @@ class Detect(QtCore.QThread):
 
         print(f'Done. ({time.time() - t0:.3f}s)')
 
-main_page = uic.loadUiType("MainWindow.ui")[0]
 
-class MyWindow(QMainWindow, main_page):
+class MainWindow(QMainWindow, main_page):
     def __init__(self,parent=None):
         super().__init__(parent)
 
@@ -255,26 +259,16 @@ class MyWindow(QMainWindow, main_page):
 
     def initializeUi(self):
 
-        #label
-        # self.label = [self.label1, self.label2, self.label3, self.label4, self.label5]
-        # self.label_center = []
-        # for i,label in enumerate(self.label):
-        #     x_center = (label.x() + label.width())
-        #     y_center = (label.y() + label.height())
-        #     self.label_center.append(QPoint(x_center,y_center))
-
-        #map
-        map = QtGui.QPixmap('/home/jngeun/yolov5/data/images/map.png')
+        #-------------------Map-----------------#
+        map = QtGui.QPixmap(map_location)
         self.map.setPixmap(map)
 
-
-        #system log
+        #--------------System Log---------------#
         self.systemLog.setPlainText('Start System.')
 
-        #statebar
-        # battery
-        self.battery.setValue(80)
-        #Clock
+        #--------------System battery-----------#
+        self.battery.setValue(battery_voltage_percent)
+        #-----------------Clock-----------------#
         # creating a timer object
         timer = QTimer(self)
         # adding action to timer
@@ -283,7 +277,7 @@ class MyWindow(QMainWindow, main_page):
         timer.start(1000)
         self.clock.setFont(QtGui.QFont("궁서", 16))
         self.clock.setStyleSheet("Color : white")
-        #btn
+        #-----------------Button----------------#
         self.btn1.setStyleSheet('image:url(data/images/btn1.png);border:0px;')
         self.btn2.setStyleSheet('image:url(data/images/btn2.png);border:0px;')
         self.btn3.setStyleSheet('image:url(data/images/btn3.png);border:0px;')
@@ -291,7 +285,7 @@ class MyWindow(QMainWindow, main_page):
         self.setting.setStyleSheet('image:url(data/images/setting.png);border:0px;')
         self.setting.clicked.connect(self.settingPage)
 
-        #sensor
+        # Slider
         self.slider1.setValue(10)
         self.slider2.setValue(20)
         self.slider3.setValue(30)
@@ -299,8 +293,7 @@ class MyWindow(QMainWindow, main_page):
         self.slider5.setValue(50)
         self.slider6.setValue(60)
 
-
-        # led
+        # Led
         self.cnt = 0
         self.led_up = cv2.imread('data/images/led_up.jpg', cv2.IMREAD_COLOR)
         self.led_down = cv2.imread('data/images/led_down.jpg', cv2.IMREAD_COLOR)
@@ -311,11 +304,11 @@ class MyWindow(QMainWindow, main_page):
 
     def threadEventHandler(self, im0):
 
-        #webcam
+        # webcam
         img = cv2.cvtColor(im0, cv2.COLOR_BGR2RGB)
-        h, w, c =img.shape
+        h, w, c = img.shape
 
-        #label
+        # label
         self.cnt =  (self.cnt + 1 ) % 100
         if self.cnt >= 0 and self.cnt < 25:
             self.led(img, 'U')
@@ -326,8 +319,8 @@ class MyWindow(QMainWindow, main_page):
         elif self.cnt >= 75:
             self.led(img, 'L')
 
-        #pixmap
-        w_scale,h_scale = 1.7, 1.7
+        # pixmap
+        w_scale,h_scale = 2, 2
         qImg = QtGui.QImage(img.data, w, h, w * c, QtGui.QImage.Format_RGB888)
         pixmap = QtGui.QPixmap.fromImage(qImg)
         pixmap = pixmap.scaledToWidth(int(w_scale * w))
@@ -335,7 +328,7 @@ class MyWindow(QMainWindow, main_page):
         #self.drawLine(pixmap, QPoint(500, 400), self.label1.pos())
         self.video.setPixmap(pixmap)
 
-        #system Log
+        # System Log
         if self.th.is_change:
             self.systemLog.append(self.th.current_label + 'is detected')
 
@@ -350,7 +343,6 @@ class MyWindow(QMainWindow, main_page):
         #     qp.drawText(pixmap.rect(), Qt.AlignCenter, label)
         #     qp.end()
         #     self.label[i].setPixmap(pixmap)
-
 
     def drawLine(self,pixmap, p1, p2):
         painter = QtGui.QPainter(pixmap)
@@ -367,9 +359,7 @@ class MyWindow(QMainWindow, main_page):
         # showing it to the label
         self.clock.setText(label_time)
 
-
     def led(self, img, direction):
-
         if direction == 'U':
             img[0:self.led_width, 0:640] = cv2.add(img[0:self.led_width, 0:640],self.led_up)
         elif direction == 'R':
@@ -382,17 +372,18 @@ class MyWindow(QMainWindow, main_page):
         return img
 
     def settingPage(self):
-        self.settingWindow = SecondPage()
+        self.settingWindow = SettingPage()
         self.settingWindow.show()
 
-setting_page = uic.loadUiType("SettingWindow.ui")[0]
-class SecondPage(QMainWindow, setting_page):
+class SettingPage(QMainWindow, setting_page):
     def __init__(self,parent=None):
         super().__init__(parent)
 
         self.setupUi(self)
 
 if __name__ == '__main__':
+
+    #Parsing Arguments in Terminal
     parser = argparse.ArgumentParser()
     parser.add_argument('--weights', nargs='+', type=str, default='yolov5s.pt', help='model.pt path(s)')
     parser.add_argument('--source', type=str, default='data/images', help='source')  # file/folder, 0 for webcam
@@ -414,15 +405,14 @@ if __name__ == '__main__':
     opt = parser.parse_args()
     check_requirements(exclude=('pycocotools', 'thop'))
 
-    #detection label
-    detection_label = []
-
     # QApplication : 프로그램을 실행시켜주는 클래스
     app = QtWidgets.QApplication(sys.argv)
-    # 객체 생성
-    myWindow = MyWindow()
-    Page = SecondPage()
+
+    # UI 객체 생성
+    MainWindow = MainWindow()
+
     # 프로그램 화면 보여줌
-    myWindow.show()
+    MainWindow.show()
+
     # 프로그램을 이벤트루프로 진입
     app.exec_()
